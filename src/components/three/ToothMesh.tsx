@@ -2,18 +2,16 @@
 
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { RoundedBox } from "@react-three/drei";
 import * as THREE from "three";
 import type { ProblemVisual } from "@/data/problems";
+import { getToothGeometry } from "./toothGeometry";
+import { getEnamelTextures } from "./enamelTextures";
 
 /**
- * A stylised-yet-believable procedural tooth assembled from primitives:
- * an enamel crown (rounded box with cusps) sitting on tapered roots.
- * The `variant` drives condition-specific overlays — a decay pocket, an
- * internal infection glow, a crack, or an implant post.
- *
- * Everything is generated in code so the experience ships with zero binary
- * 3D assets while still feeling tactile and dimensional.
+ * Realistic procedural tooth: an anatomically-sculpted molar (see
+ * toothGeometry.ts) finished with a translucent, clear-coated enamel material
+ * and a soft gum collar. Condition-specific overlays (decay, infection glow,
+ * fracture, plaque, inflamed gums, implant) are layered on per `variant`.
  */
 export default function ToothMesh({
   variant = "cavity",
@@ -23,87 +21,79 @@ export default function ToothMesh({
   floatSeed?: number;
 }) {
   const group = useRef<THREE.Group>(null);
+  const geometry = useMemo(() => getToothGeometry(), []);
 
-  const enamel = useMemo(
-    () =>
-      new THREE.MeshPhysicalMaterial({
-        color: "#f3f6fb",
-        roughness: 0.25,
-        metalness: 0.05,
-        clearcoat: 0.9,
-        clearcoatRoughness: 0.15,
-        sheen: 1,
-        sheenColor: new THREE.Color("#dbeafe"),
-        transmission: 0.04,
-      }),
-    []
-  );
-
-  const rootMat = useMemo(
-    () =>
-      new THREE.MeshStandardMaterial({
-        color: "#e9d8c4",
-        roughness: 0.6,
-        metalness: 0,
-      }),
-    []
-  );
-
-  // Gentle idle float + breathing rotation.
-  useFrame((state) => {
-    if (!group.current) return;
-    const t = state.clock.elapsedTime + floatSeed;
-    group.current.position.y = Math.sin(t * 0.8) * 0.08;
-    group.current.rotation.y = Math.sin(t * 0.35) * 0.25;
-    group.current.rotation.z = Math.cos(t * 0.3) * 0.05;
-  });
-
-  // Cusp bump positions on top of the crown.
-  const cusps = useMemo(
-    () => [
-      [-0.45, 0.72, -0.45],
-      [0.45, 0.72, -0.45],
-      [-0.45, 0.72, 0.45],
-      [0.45, 0.72, 0.45],
-    ],
-    []
-  );
+  const enamel = useMemo(() => {
+    const { roughnessMap, bumpMap } = getEnamelTextures();
+    return new THREE.MeshPhysicalMaterial({
+      color: new THREE.Color("#f6f4ec"),
+      roughness: 0.22,
+      roughnessMap: roughnessMap ?? null,
+      bumpMap: bumpMap ?? null,
+      bumpScale: 0.006,
+      metalness: 0,
+      clearcoat: 1,
+      clearcoatRoughness: 0.12,
+      transmission: 0.16,
+      thickness: 1.3,
+      ior: 1.6,
+      attenuationColor: new THREE.Color("#ffe9d6"),
+      attenuationDistance: 2.4,
+      sheen: 0.6,
+      sheenRoughness: 0.5,
+      sheenColor: new THREE.Color("#dbeafe"),
+      envMapIntensity: 1.15,
+      specularIntensity: 1,
+    });
+  }, []);
 
   const isMissing = variant === "missing";
 
+  useFrame((state) => {
+    if (!group.current) return;
+    const t = state.clock.elapsedTime + floatSeed;
+    group.current.rotation.y = Math.sin(t * 0.32) * 0.35;
+    group.current.rotation.z = Math.cos(t * 0.28) * 0.045;
+  });
+
   return (
-    <group ref={group} scale={1.1}>
+    <group ref={group} position={[0, 0.15, 0]} scale={0.82}>
       {!isMissing ? (
         <>
-          {/* Crown */}
-          <RoundedBox
-            args={[1.4, 1.2, 1.4]}
-            radius={0.42}
-            smoothness={6}
-            position={[0, 0.35, 0]}
-            material={enamel}
-          />
-          {/* Cusps */}
-          {cusps.map((p, i) => (
-            <mesh key={i} position={p as [number, number, number]} material={enamel}>
-              <sphereGeometry args={[0.3, 24, 24]} />
-            </mesh>
-          ))}
-
-          {/* Roots */}
-          <mesh position={[-0.32, -0.95, 0]} rotation={[0, 0, 0.18]} material={rootMat}>
-            <coneGeometry args={[0.34, 1.6, 20]} />
-          </mesh>
-          <mesh position={[0.32, -0.95, 0]} rotation={[0, 0, -0.18]} material={rootMat}>
-            <coneGeometry args={[0.34, 1.6, 20]} />
-          </mesh>
-
+          <mesh geometry={geometry} material={enamel} castShadow receiveShadow />
+          <Gum variant={variant} />
           <VariantOverlay variant={variant} />
         </>
       ) : (
-        <ImplantAssembly enamel={enamel} />
+        <ImplantAssembly geometry={geometry} enamel={enamel} />
       )}
     </group>
+  );
+}
+
+/** Soft gum collar hugging the neck of the tooth (inflamed for gum disease). */
+function Gum({ variant }: { variant: ProblemVisual }) {
+  const inflamed = variant === "gum";
+  const mat = useMemo(
+    () =>
+      new THREE.MeshPhysicalMaterial({
+        color: new THREE.Color(inflamed ? "#d6485f" : "#e58aa0"),
+        roughness: 0.55,
+        clearcoat: 0.4,
+        clearcoatRoughness: 0.4,
+        transmission: 0.25,
+        thickness: 0.6,
+        sheen: 1,
+        sheenColor: new THREE.Color("#ffd9e0"),
+        emissive: new THREE.Color(inflamed ? "#9b1c33" : "#000000"),
+        emissiveIntensity: inflamed ? 0.45 : 0,
+      }),
+    [inflamed]
+  );
+  return (
+    <mesh position={[0, -0.05, 0]} rotation={[Math.PI / 2, 0, 0]} material={mat}>
+      <torusGeometry args={[0.62, 0.2, 24, 48]} />
+    </mesh>
   );
 }
 
@@ -113,100 +103,110 @@ function VariantOverlay({ variant }: { variant: ProblemVisual }) {
   useFrame((s) => {
     if (glow.current) {
       const m = glow.current.material as THREE.MeshStandardMaterial;
-      m.emissiveIntensity = 1.4 + Math.sin(s.clock.elapsedTime * 3) * 0.6;
+      m.emissiveIntensity = 1.5 + Math.sin(s.clock.elapsedTime * 3) * 0.7;
     }
   });
 
   switch (variant) {
     case "cavity":
-      // Dark decay pocket eating into the crown surface.
       return (
-        <mesh position={[0.5, 0.55, 0.55]}>
-          <sphereGeometry args={[0.34, 24, 24]} />
-          <meshStandardMaterial color="#2b1a0f" roughness={1} />
-        </mesh>
+        <group position={[0.52, 1.0, 0.5]}>
+          {/* dark decayed pocket */}
+          <mesh>
+            <sphereGeometry args={[0.3, 28, 28]} />
+            <meshStandardMaterial color="#1c0f07" roughness={1} metalness={0} />
+          </mesh>
+          {/* brown demineralised halo */}
+          <mesh scale={1.5}>
+            <sphereGeometry args={[0.3, 24, 24]} />
+            <meshStandardMaterial
+              color="#5a3a1e"
+              roughness={1}
+              transparent
+              opacity={0.45}
+            />
+          </mesh>
+        </group>
       );
-    case "gum":
-      // Inflamed gum collar around the neck of the tooth.
-      return (
-        <mesh position={[0, -0.25, 0]}>
-          <torusGeometry args={[0.78, 0.22, 20, 40]} />
-          <meshStandardMaterial
-            color="#d6485f"
-            emissive="#9b1c33"
-            emissiveIntensity={0.5}
-            roughness={0.5}
-          />
-        </mesh>
-      );
+
     case "plaque":
-      // Mineral crust band near the gumline.
+      // yellow tartar crust accreting at the gumline
       return (
-        <mesh position={[0, -0.15, 0]}>
-          <torusGeometry args={[0.74, 0.16, 16, 36]} />
-          <meshStandardMaterial color="#e7d8a6" roughness={0.95} />
+        <mesh position={[0, 0.18, 0]} rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[0.6, 0.12, 18, 40]} />
+          <meshStandardMaterial color="#e3cf8f" roughness={0.95} />
         </mesh>
       );
+
     case "fracture":
-      // A thin dark crack plane slicing the crown.
+      // a dark crack slicing down through the crown
       return (
-        <mesh position={[0, 0.4, 0]} rotation={[0, 0.4, 0.3]}>
-          <boxGeometry args={[0.04, 1.5, 1.5]} />
-          <meshStandardMaterial color="#1a2530" roughness={0.9} />
+        <mesh position={[0, 0.9, 0]} rotation={[0, 0.5, 0.28]}>
+          <boxGeometry args={[0.03, 1.7, 1.5]} />
+          <meshStandardMaterial color="#10181f" roughness={0.9} />
         </mesh>
       );
+
     case "rootcanal":
-      // Glowing infected pulp visible through translucent enamel.
+      // glowing infected pulp seen through the translucent enamel
       return (
-        <mesh ref={glow} position={[0, 0.1, 0]}>
-          <sphereGeometry args={[0.45, 24, 24]} />
+        <mesh ref={glow} position={[0, 0.85, 0]}>
+          <sphereGeometry args={[0.42, 28, 28]} />
           <meshStandardMaterial
             color="#ff5a36"
             emissive="#ff3b1f"
             emissiveIntensity={1.6}
             transparent
-            opacity={0.9}
+            opacity={0.92}
           />
         </mesh>
       );
+
     default:
       return null;
   }
 }
 
-/** Titanium implant + ceramic crown shown for the "missing tooth" chapter. */
-function ImplantAssembly({ enamel }: { enamel: THREE.Material }) {
+/** Titanium implant + ceramic crown for the "missing tooth" chapter. */
+function ImplantAssembly({
+  geometry,
+  enamel,
+}: {
+  geometry: THREE.BufferGeometry;
+  enamel: THREE.Material;
+}) {
   const titanium = useMemo(
     () =>
       new THREE.MeshStandardMaterial({
         color: "#c8ccd2",
-        roughness: 0.3,
-        metalness: 0.9,
+        roughness: 0.28,
+        metalness: 0.95,
       }),
     []
   );
+  // Reuse the enamel crown but hide the natural roots behind the implant post.
   return (
     <group>
-      {/* Screw post (threaded look via stacked torus rings) */}
-      <mesh position={[0, -0.9, 0]} material={titanium}>
-        <cylinderGeometry args={[0.26, 0.18, 1.6, 24]} />
+      {/* Threaded screw post */}
+      <mesh position={[0, -0.95, 0]} material={titanium} castShadow>
+        <cylinderGeometry args={[0.26, 0.16, 1.7, 28]} />
       </mesh>
-      {[...Array(6)].map((_, i) => (
-        <mesh key={i} position={[0, -0.4 - i * 0.22, 0]} material={titanium}>
-          <torusGeometry args={[0.27, 0.04, 10, 24]} />
+      {[...Array(7)].map((_, i) => (
+        <mesh key={i} position={[0, -0.35 - i * 0.2, 0]} material={titanium}>
+          <torusGeometry args={[0.27, 0.035, 10, 28]} />
         </mesh>
       ))}
       {/* Abutment */}
-      <mesh position={[0, 0.05, 0]} material={titanium}>
-        <cylinderGeometry args={[0.22, 0.3, 0.5, 20]} />
+      <mesh position={[0, 0.1, 0]} material={titanium} castShadow>
+        <cylinderGeometry args={[0.2, 0.3, 0.55, 24]} />
       </mesh>
-      {/* Ceramic crown */}
-      <RoundedBox
-        args={[1.3, 1.1, 1.3]}
-        radius={0.4}
-        smoothness={6}
-        position={[0, 0.7, 0]}
+      {/* Ceramic crown — clip to just the crown portion of the tooth mesh */}
+      <mesh
+        geometry={geometry}
         material={enamel}
+        position={[0, 0.05, 0]}
+        scale={[1, 0.62, 1]}
+        castShadow
       />
     </group>
   );
