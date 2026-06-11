@@ -20,7 +20,7 @@ import { mergeBufferGeometries } from "three-stdlib";
 const gauss = (d: number, s: number) => Math.exp(-(d * d) / (2 * s * s));
 
 function buildCrown(): THREE.BufferGeometry {
-  const geo = new THREE.IcosahedronGeometry(1, 24).toNonIndexed();
+  const geo = new THREE.IcosahedronGeometry(1, 14).toNonIndexed();
   const pos = geo.attributes.position as THREE.BufferAttribute;
   const v = new THREE.Vector3();
 
@@ -90,7 +90,7 @@ function buildCrown(): THREE.BufferGeometry {
 
 function buildRoot(curveOut: number, lean: number): THREE.BufferGeometry {
   // A tapered, gently curved root built by bending a cylinder along its length.
-  const geo = new THREE.CylinderGeometry(0.3, 0.05, 1.9, 24, 14, false)
+  const geo = new THREE.CylinderGeometry(0.3, 0.05, 1.9, 20, 8, false)
     .toNonIndexed();
   const pos = geo.attributes.position as THREE.BufferAttribute;
   const v = new THREE.Vector3();

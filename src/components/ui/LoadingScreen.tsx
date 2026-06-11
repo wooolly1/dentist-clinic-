@@ -14,6 +14,15 @@ export default function LoadingScreen() {
   const [done, setDone] = useState(false);
 
   useEffect(() => {
+    // Allow skipping the intro (handy for testing / deep links).
+    if (
+      typeof window !== "undefined" &&
+      window.location.search.includes("noload")
+    ) {
+      setProgress(100);
+      setDone(true);
+      return;
+    }
     let raf = 0;
     let value = 0;
     const step = () => {
