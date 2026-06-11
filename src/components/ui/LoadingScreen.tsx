@@ -17,8 +17,8 @@ export default function LoadingScreen() {
     let raf = 0;
     let value = 0;
     const step = () => {
-      // Ease toward 100 with a little organic jitter.
-      value += Math.max(0.6, (100 - value) * 0.025);
+      // Ease toward 100 with a little organic jitter (~2s total).
+      value += Math.max(1.4, (100 - value) * 0.06);
       if (value >= 100) {
         value = 100;
         setProgress(100);
