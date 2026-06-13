@@ -3,8 +3,9 @@
 A premium, award-style single-page dental clinic website built as an immersive,
 **scroll-driven storytelling experience** — think Apple product launches meets
 modern Awwwards sites. The visitor travels from a patient reclined in a luxury
-dental chair, *into the mouth*, and tooth-by-tooth through six common dental
-conditions, meeting the specialist who treats each one.
+dental chair, *into the mouth*, and through an interactive smile where every
+tooth can be inspected. The face turns around condition by condition until a
+flawless, healthy smile remains.
 
 ## ✨ Experience
 
@@ -12,15 +13,16 @@ conditions, meeting the specialist who treats each one.
 | ----- | ------------ |
 | **1 · Camera Zoom** | Pinned full-screen clinic scene. As you scroll, the "camera" dollies toward the patient's face, the jaw opens, and the teeth become the focus — driven by a GSAP ScrollTrigger timeline. |
 | **2 · Enter the Mouth** | A dark, intimate interior with parallax tooth arches and drifting light particles for a sense of travelling inside the mouth. |
-| **3 · Problems Journey** | Six chapters — Cavities, Gum Disease, Plaque & Tartar, Tooth Fracture, Root Canal Infection, Missing Tooth — each with a live 3D tooth, a scroll-reactive condition animation, educational copy, and an interactive specialist card. |
+| **3 · The Interactive Smile** | A single pinned face holds a front-facing, fully interactive smile. **Hover any tooth** to surface a tooltip naming its condition; **click** to slide in the responsible specialist's card. As you keep scrolling, the **face turns all the way around** and reveals the next condition painted onto the smile — cavities, gum disease, crooked teeth & braces, plaque & tartar, a fracture, a root-canal infection, a missing tooth — ending on a **flawless, healthy smile** with nothing left to fix. |
 
 ## 🧱 Tech stack
 
 - **Next.js 15** (App Router) + **React 18** + **TypeScript**
 - **Tailwind CSS** — design system, glassmorphism, premium palette
-- **GSAP + ScrollTrigger** — pinned cinematic timelines & section progress
-- **Framer Motion** — entrance animations, parallax, micro-interactions
-- **Three.js + React Three Fiber + drei** — procedural 3D teeth & implant
+- **GSAP + ScrollTrigger** — pinned cinematic hero timeline
+- **Framer Motion** — scroll progress, the chapter flip, entrance & micro-interactions
+- **Procedural SVG** — the patient, the chair and the interactive smile are all
+  drawn in code (no image assets)
 - **Lenis** — buttery smooth scrolling, synced to GSAP's ticker
 
 ## 🚀 Getting started
@@ -45,28 +47,33 @@ src/
 │   │   └── SmoothScrollProvider.tsx   # Lenis ↔ GSAP ScrollTrigger bridge
 │   ├── ui/                 # LoadingScreen, Navbar, ScrollProgress,
 │   │                       # MouseLight, DoctorCard, ToothIcon
-│   ├── three/              # ToothMesh (procedural), ToothCanvas
 │   └── sections/           # Hero, ClinicScene, MouthIntro,
-│                           # ProblemScene, ConditionVisual, ContactFooter
+│                           # SmileJourney, SmileStage, ContactFooter
 ├── data/
 │   └── problems.ts         # single source of truth: chapters + doctors
-├── hooks/
-│   └── useSectionProgress.ts          # per-section scroll progress (0→1)
 └── lib/
     └── gsap.ts             # one-time plugin registration
 ```
 
+- **`SmileStage.tsx`** draws the front-facing smile as layered SVG: every tooth
+  is its own interactive element (hover → tooltip, click → `onSelect`), and the
+  `variant` paints the matching condition (decay, inflamed gums, braces, plaque,
+  fracture, infection, missing tooth, or a flawless healthy smile).
+- **`SmileJourney.tsx`** pins the face, maps scroll progress to the active
+  chapter, spins the face 360° on each hand-off, and reveals the specialist's
+  `DoctorCard` (tagged with the condition name) when a tooth is clicked.
+
 ### Design notes
 
-- **Zero binary assets.** Every visual — the patient, the chair, the 3D teeth,
-  the implant, the condition effects — is generated from SVG, CSS and WebGL
-  primitives, so the project is fully self-contained. Swap in real photography
-  by editing `ClinicScene.tsx` and the doctor fields.
+- **Zero binary assets.** Every visual — the patient, the chair, the smile, the
+  condition effects — is generated from SVG and CSS, so the project is fully
+  self-contained. Swap in real photography by editing `ClinicScene.tsx` /
+  `SmileStage.tsx` and the doctor fields.
 - **Content-driven.** Add or reorder chapters by editing `src/data/problems.ts`;
-  the navigation, progress rail and journey all derive from it.
-- **Accessibility & performance.** Respects `prefers-reduced-motion`, lazy-loads
-  the 3D canvases, ships SEO metadata + structured data, and uses semantic
-  landmarks and ARIA labels throughout.
+  the navigation, progress rail and smile journey all derive from it. Each
+  chapter sets a `visual`, a `target` tooth/region and a `tooltip`.
+- **Accessibility & performance.** Respects `prefers-reduced-motion`, ships SEO
+  metadata + structured data, and uses semantic landmarks and ARIA labels.
 
 ## 🎨 Customisation
 
