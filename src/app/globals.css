@@ -5,7 +5,7 @@
 :root {
   --font-sans: ui-sans-serif, system-ui, sans-serif;
   --font-display: Georgia, "Times New Roman", serif;
-  --bg: #f8fafc;
+  --bg: #fbf8f1;
 }
 
 * {
@@ -36,7 +36,7 @@ html.lenis body {
 
 body {
   background: var(--bg);
-  color: #0f365b;
+  color: #1c1814;
   font-family: var(--font-sans);
   overflow-x: hidden;
 }
@@ -49,26 +49,26 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #7db6e2, #1f6ba8);
+  background: linear-gradient(180deg, #ebcc79, #c9972e);
   border-radius: 99px;
 }
 
 @layer components {
   .glass {
-    @apply border border-white/40 bg-white/55 backdrop-blur-xl;
-    box-shadow: 0 8px 32px rgba(15, 54, 91, 0.12);
+    @apply border border-white/50 bg-white/55 backdrop-blur-xl;
+    box-shadow: 0 8px 32px rgba(28, 24, 20, 0.1);
   }
 
   .glass-dark {
-    @apply border border-white/10 bg-clinical-900/40 backdrop-blur-xl;
+    @apply border border-white/10 bg-ink-900/40 backdrop-blur-xl;
   }
 
   .text-gradient-gold {
-    @apply bg-gradient-to-r from-gold-500 via-gold-300 to-gold-500 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-gold-600 via-gold-400 to-gold-600 bg-clip-text text-transparent;
   }
 
-  .text-gradient-clinical {
-    @apply bg-gradient-to-r from-clinical-600 to-clinical-400 bg-clip-text text-transparent;
+  .text-gradient-ink {
+    @apply bg-gradient-to-r from-ink-800 to-ink-500 bg-clip-text text-transparent;
   }
 }
 

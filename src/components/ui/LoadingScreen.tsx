@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import ToothIcon from "./ToothIcon";
-import { CLINIC } from "@/data/problems";
+import { CLINIC } from "@/data/clinic";
 
 /**
  * Cinematic intro overlay. Simulates an asset-load progress bar with a glowing
@@ -36,12 +36,12 @@ export default function LoadingScreen() {
     <AnimatePresence>
       {!done && (
         <motion.div
-          className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-gradient-to-b from-clinical-900 via-clinical-800 to-clinical-900"
+          className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-gradient-to-b from-ink-900 via-ink-800 to-ink-900"
           exit={{ y: "-100%" }}
           transition={{ duration: 0.9, ease: [0.76, 0, 0.24, 1] }}
         >
           {/* ambient glow */}
-          <div className="pointer-events-none absolute h-[60vmin] w-[60vmin] rounded-full bg-clinical-400/20 blur-3xl" />
+          <div className="pointer-events-none absolute h-[60vmin] w-[60vmin] rounded-full bg-gold-400/20 blur-3xl" />
 
           <div className="relative flex flex-col items-center">
             <div className="relative h-28 w-24">
@@ -52,10 +52,10 @@ export default function LoadingScreen() {
                 className="absolute inset-0 overflow-hidden"
                 style={{ clipPath: `inset(${100 - progress}% 0 0 0)` }}
               >
-                <ToothIcon className="h-full w-full text-white drop-shadow-[0_0_18px_rgba(125,182,226,0.8)]" />
+                <ToothIcon className="h-full w-full text-white drop-shadow-[0_0_18px_rgba(221,177,74,0.8)]" />
               </div>
               <motion.div
-                className="absolute -inset-6 rounded-full bg-clinical-300/20 blur-2xl"
+                className="absolute -inset-6 rounded-full bg-gold-300/20 blur-2xl"
                 animate={{ opacity: [0.3, 0.7, 0.3] }}
                 transition={{ duration: 2, repeat: Infinity }}
               />
@@ -69,17 +69,17 @@ export default function LoadingScreen() {
             >
               {CLINIC.name}
             </motion.p>
-            <p className="mt-1 text-xs uppercase tracking-[0.35em] text-clinical-200">
+            <p className="mt-1 text-xs uppercase tracking-[0.35em] text-gold-200">
               Preparing your visit
             </p>
 
             <div className="mt-7 h-[3px] w-56 overflow-hidden rounded-full bg-white/10">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-clinical-300 to-gold-300 transition-[width] duration-100 ease-out"
+                className="h-full rounded-full bg-gradient-to-r from-gold-300 to-gold-500 transition-[width] duration-100 ease-out"
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <p className="mt-3 font-mono text-xs text-clinical-200/80">
+            <p className="mt-3 font-mono text-xs text-gold-200/80">
               {Math.round(progress)}%
             </p>
           </div>

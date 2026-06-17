@@ -8,9 +8,32 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Premium medical palette: soft white, clinical blue, luxury gold
-        ivory: "#F8FAFC",
-        porcelain: "#EEF3F8",
+        // Luxury palette: warm ivory, deep ink, and signature gold.
+        ivory: "#FBF8F1",
+        porcelain: "#F3EEE3",
+        ink: {
+          50: "#F5F5F4",
+          100: "#E7E5E1",
+          200: "#CBC7BF",
+          300: "#A8A29A",
+          400: "#7C766C",
+          500: "#574F45",
+          600: "#3F3830",
+          700: "#2C2620",
+          800: "#1C1814",
+          900: "#0E0B08",
+        },
+        gold: {
+          50: "#FCF6E7",
+          100: "#FBF3DE",
+          200: "#F4E2B0",
+          300: "#EBCC79",
+          400: "#DDB14A",
+          500: "#C9972E",
+          600: "#A87A22",
+          700: "#82601C",
+        },
+        // legacy clinical scale kept for any residual references
         clinical: {
           50: "#EBF4FB",
           100: "#D4E7F6",
@@ -22,14 +45,6 @@ const config: Config = {
           700: "#175082",
           800: "#0F365B",
           900: "#081D33",
-        },
-        gold: {
-          100: "#FBF3DE",
-          200: "#F4E2B0",
-          300: "#EBCC79",
-          400: "#DDB14A",
-          500: "#C9972E",
-          600: "#A87A22",
         },
       },
       fontFamily: {

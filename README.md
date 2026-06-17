@@ -1,29 +1,33 @@
-# Lumière Dental — Cinematic Scroll Experience
+# Aurea Dental — Futuristic Interactive Clinic
 
-A premium, award-style single-page dental clinic website built as an immersive,
-**scroll-driven storytelling experience** — think Apple product launches meets
-modern Awwwards sites. The visitor travels from a patient reclined in a luxury
-dental chair, *into the mouth*, and through an interactive smile where every
-tooth can be inspected. The face turns around condition by condition until a
-flawless, healthy smile remains.
+An award-style, scroll-driven dental clinic website that blends an Apple-style
+product page, a medical simulator and an interactive museum. The visitor starts
+on a smiling patient, flies straight into a **fully interactive 3D jaw**, and
+explores orthodontics, gum health, implants and cosmetic dentistry — all in a
+premium white-and-gold key.
 
 ## ✨ Experience
 
-| Scene | What happens |
-| ----- | ------------ |
-| **1 · Camera Zoom** | Pinned full-screen clinic scene. As you scroll, the "camera" dollies toward the patient's face, the jaw opens, and the teeth become the focus — driven by a GSAP ScrollTrigger timeline. |
-| **2 · Enter the Mouth** | A dark, intimate interior with parallax tooth arches and drifting light particles for a sense of travelling inside the mouth. |
-| **3 · The Interactive Smile** | A single pinned face holds a front-facing, fully interactive smile. **Hover any tooth** to surface a tooltip naming its condition; **click** to slide in the responsible specialist's card. As you keep scrolling, the **face turns all the way around** and reveals the next condition painted onto the smile — cavities, gum disease, crooked teeth & braces, plaque & tartar, a fracture, a root-canal infection, a missing tooth — ending on a **flawless, healthy smile** with nothing left to fix. |
+| # | Section | What happens |
+|---|---------|--------------|
+| 1 | **Hero** | A photoreal smiling patient. A pinned GSAP timeline pushes the camera straight into the mouth, closing a vignette that hands off to the 3D scene. |
+| 2 | **Teeth** | A real-time **React Three Fiber** jaw (32 procedural teeth on upper & lower arches). The camera flies out from inside the mouth, then orbit controls take over. Hover any tooth to highlight it; click it to open a floating panel with its **name, common problems, recommended treatments, related specialists and a booking CTA**. |
+| 3 | **Orthodontics** | A scroll-controlled before/after: crowded, rotated teeth straighten into a perfect arch as braces appear and come off. |
+| 4 | **Gum Diseases** | A realistic gum visualization you can drag from healthy to severely inflamed, with interactive hotspots explaining each clinical sign. |
+| 5 | **Dental Implants** | An interactive implant anatomy — hover/tap the crown, abutment or titanium post to learn how each part rebuilds a missing tooth. |
+| 6 | **Cosmetic Dentistry** | A draggable before/after smile-makeover slider plus a live whitening-shade selector. |
+
+A **fixed vertical navigation** rail tracks the active section with a scroll-spy,
+and the whole page rides on Lenis smooth scrolling synced to GSAP.
 
 ## 🧱 Tech stack
 
-- **Next.js 15** (App Router) + **React 18** + **TypeScript**
-- **Tailwind CSS** — design system, glassmorphism, premium palette
-- **GSAP + ScrollTrigger** — pinned cinematic hero timeline
-- **Framer Motion** — scroll progress, the chapter flip, entrance & micro-interactions
-- **Procedural SVG** — the patient, the chair and the interactive smile are all
-  drawn in code (no image assets)
-- **Lenis** — buttery smooth scrolling, synced to GSAP's ticker
+- **Next.js 15** (App Router) + **React 19** + **TypeScript**
+- **React Three Fiber + Three.js + drei** — the interactive 3D jaw
+- **GSAP + ScrollTrigger** — the pinned hero "fly into the mouth" timeline
+- **Framer Motion** — scroll-driven section animations & micro-interactions
+- **Tailwind CSS** — the white/gold luxury design system
+- **Lenis** — buttery smooth scrolling
 
 ## 🚀 Getting started
 
@@ -34,56 +38,55 @@ npm run build    # production build
 npm start        # serve the production build
 ```
 
+## 🖼 The hero photo
+
+The hero expects a realistic patient portrait at:
+
+```
+public/images/hero-patient.jpg
+```
+
+Drop a wide (≈16:9) front-facing smiling portrait there — the mouth should sit
+around 62% down the frame so the zoom lands inside it. Until the file is added,
+the hero falls back to an elegant gold gradient (no broken image). The zoom
+target/origin is tuned in `src/components/sections/Hero.tsx`.
+
 ## 🗂 Architecture
 
 ```
 src/
 ├── app/
-│   ├── layout.tsx          # fonts, SEO metadata, JSON-LD schema
-│   ├── page.tsx            # composes the full scroll journey
+│   ├── layout.tsx          # fonts, SEO metadata, JSON-LD
+│   ├── page.tsx            # composes the six scenes
 │   └── globals.css         # Tailwind layers, glass utilities, Lenis styles
 ├── components/
-│   ├── providers/
-│   │   └── SmoothScrollProvider.tsx   # Lenis ↔ GSAP ScrollTrigger bridge
-│   ├── ui/                 # LoadingScreen, Navbar, ScrollProgress,
-│   │                       # MouseLight, DoctorCard, ToothIcon
-│   └── sections/           # Hero, ClinicScene, MouthIntro,
-│                           # SmileJourney, SmileStage, ContactFooter
-├── data/
-│   └── problems.ts         # single source of truth: chapters + doctors
-└── lib/
-    └── gsap.ts             # one-time plugin registration
+│   ├── three/
+│   │   ├── Tooth.tsx       # one interactive procedural tooth (shape per type)
+│   │   ├── Jaw.tsx         # 32 teeth on elliptical arches + gum ridges
+│   │   └── JawScene.tsx    # canvas, lighting, scroll-driven camera + orbit
+│   ├── sections/
+│   │   ├── Hero.tsx        # patient + cinematic zoom into the mouth
+│   │   ├── ExploreJaw.tsx  # pinned 3D jaw + selection state
+│   │   ├── Orthodontics.tsx# scroll before/after alignment
+│   │   ├── GumDisease.tsx  # inflammation visualization + hotspots
+│   │   ├── Implants.tsx    # interactive implant anatomy
+│   │   ├── Cosmetic.tsx    # before/after slider + whitening shades
+│   │   └── ContactFooter.tsx
+│   ├── ui/
+│   │   ├── SideNav.tsx     # fixed vertical scroll-spy navigation
+│   │   ├── Navbar.tsx, ToothPanel.tsx, LoadingScreen.tsx,
+│   │   └── MouseLight.tsx, ToothIcon.tsx
+│   └── providers/SmoothScrollProvider.tsx  # Lenis ↔ GSAP bridge
+├── data/clinic.ts          # teeth, tooth archetypes, doctors, sections, clinic
+└── lib/gsap.ts             # one-time plugin registration
 ```
-
-- **`SmileStage.tsx`** draws the front-facing smile as layered SVG: every tooth
-  is its own interactive element (hover → tooltip, click → `onSelect`), and the
-  `variant` paints the matching condition (decay, inflamed gums, braces, plaque,
-  fracture, infection, missing tooth, or a flawless healthy smile).
-- **`SmileJourney.tsx`** pins the face, maps scroll progress to the active
-  chapter, spins the face 360° on each hand-off, and reveals the specialist's
-  `DoctorCard` (tagged with the condition name) when a tooth is clicked.
 
 ### Design notes
 
-- **Zero binary assets.** Every visual — the patient, the chair, the smile, the
-  condition effects — is generated from SVG and CSS, so the project is fully
-  self-contained. Swap in real photography by editing `ClinicScene.tsx` /
-  `SmileStage.tsx` and the doctor fields.
-- **Content-driven.** Add or reorder chapters by editing `src/data/problems.ts`;
-  the navigation, progress rail and smile journey all derive from it. Each
-  chapter sets a `visual`, a `target` tooth/region and a `tooltip`.
-- **Accessibility & performance.** Respects `prefers-reduced-motion`, ships SEO
-  metadata + structured data, and uses semantic landmarks and ARIA labels.
-
-## 🎨 Customisation
-
-- **Palette** lives in `tailwind.config.ts` (`clinical`, `gold` scales).
-- **Clinic details** (name, phone, address) live in `CLINIC` in
-  `src/data/problems.ts`.
-- **Doctors** are placeholder data — replace names, specialties and accents in
-  the same file.
-
----
-
-Built as a production-ready demonstration of cinematic, scroll-native web design
-for premium healthcare branding.
+- **Content-driven.** All 32 teeth, their clinical profiles and the section list
+  derive from `src/data/clinic.ts`. Each tooth archetype carries its own
+  problems, treatments and specialists.
+- **Procedural 3D.** The jaw is generated entirely in code (rounded boxes, cusp
+  spheres, tube-geometry gums) — no binary 3D assets to ship.
+- **Accessibility & performance.** Respects `prefers-reduced-motion`, lazily
+  loads the 3D canvas, and keeps the page interactive on mobile and tablet.

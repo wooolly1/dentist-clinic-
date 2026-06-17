@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Fraunces } from "next/font/google";
 import "./globals.css";
-import { CLINIC } from "@/data/problems";
+import { CLINIC } from "@/data/clinic";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -16,16 +16,16 @@ const fraunces = Fraunces({
   weight: ["400", "500", "600"],
 });
 
-const SITE_URL = "https://lumieredental.example.com";
+const SITE_URL = "https://aureadental.example.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${CLINIC.name} — Cinematic Dental Care`,
+    default: `${CLINIC.name} — Futuristic Dental Care`,
     template: `%s · ${CLINIC.name}`,
   },
   description:
-    "An immersive, scroll-driven journey through modern dentistry. Travel from the patient chair into the mouth and meet the specialists who treat every condition with precision and care.",
+    "An award-style, scroll-driven dental experience. Fly from a smiling patient into a fully interactive 3D jaw, click any tooth, and explore orthodontics, gum health, implants and cosmetic dentistry.",
   keywords: [
     "dental clinic",
     "dentist",
@@ -38,9 +38,9 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: CLINIC.name }],
   openGraph: {
-    title: `${CLINIC.name} — Cinematic Dental Care`,
+    title: `${CLINIC.name} — Futuristic Dental Care`,
     description:
-      "Travel from the patient chair into the mouth and explore dental care like never before.",
+      "Fly into an interactive 3D jaw and explore dental care like never before.",
     url: SITE_URL,
     siteName: CLINIC.name,
     type: "website",
@@ -48,9 +48,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: `${CLINIC.name} — Cinematic Dental Care`,
-    description:
-      "An immersive, scroll-driven journey through modern dentistry.",
+    title: `${CLINIC.name} — Futuristic Dental Care`,
+    description: "An award-style, scroll-driven 3D dental experience.",
   },
   robots: {
     index: true,

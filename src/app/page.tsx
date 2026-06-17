@@ -1,11 +1,14 @@
 import SmoothScrollProvider from "@/components/providers/SmoothScrollProvider";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import Navbar from "@/components/ui/Navbar";
-import ScrollProgress from "@/components/ui/ScrollProgress";
+import SideNav from "@/components/ui/SideNav";
 import MouseLight from "@/components/ui/MouseLight";
 import Hero from "@/components/sections/Hero";
-import MouthIntro from "@/components/sections/MouthIntro";
-import SmileJourney from "@/components/sections/SmileJourney";
+import ExploreJaw from "@/components/sections/ExploreJaw";
+import Orthodontics from "@/components/sections/Orthodontics";
+import GumDisease from "@/components/sections/GumDisease";
+import Implants from "@/components/sections/Implants";
+import Cosmetic from "@/components/sections/Cosmetic";
 import ContactFooter from "@/components/sections/ContactFooter";
 
 export default function Home() {
@@ -14,19 +17,26 @@ export default function Home() {
       <LoadingScreen />
       <MouseLight />
       <Navbar />
-      <ScrollProgress />
+      <SideNav />
 
       <main className="relative">
-        {/* Scene 1 — cinematic camera zoom into the reclined patient */}
+        {/* 1 · realistic patient → cinematic zoom into the mouth */}
         <Hero />
 
-        {/* Scene 2 — travelling inside the mouth */}
-        <MouthIntro />
+        {/* 2 · Teeth — interactive 3D jaw, every tooth clickable */}
+        <ExploreJaw />
 
-        {/* Scene 3 — the interactive smile: hover the teeth, meet the
-            specialists, and watch the face turn condition by condition until a
-            flawless, healthy smile remains. */}
-        <SmileJourney />
+        {/* 3 · Orthodontics — scroll-controlled before/after alignment */}
+        <Orthodontics />
+
+        {/* 4 · Gum Diseases — inflammation visualization + hotspots */}
+        <GumDisease />
+
+        {/* 5 · Dental Implants — interactive implant anatomy */}
+        <Implants />
+
+        {/* 6 · Cosmetic Dentistry — before/after + whitening shades */}
+        <Cosmetic />
 
         {/* Closing CTA */}
         <ContactFooter />
