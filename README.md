@@ -38,6 +38,19 @@ npm run build    # production build
 npm start        # serve the production build
 ```
 
+## ▲ Deploy (Vercel)
+
+This is a zero-config Next.js app — Vercel auto-detects everything.
+
+1. Go to **vercel.com/new** and sign in (free Hobby plan is fine).
+2. **Import** the `wooolly1/dentist-clinic-` repository.
+3. Leave all defaults (Framework: **Next.js**, Build: `next build`, Output: auto)
+   and click **Deploy**. The first build takes ~1–2 min.
+4. Vercel gives you a live URL (e.g. `https://dentist-clinic.vercel.app`) and
+   redeploys automatically on every push to `main`.
+
+No environment variables are required.
+
 ## 🖼 The hero photo
 
 The hero expects a realistic patient portrait at:
