@@ -66,28 +66,35 @@ export default function Hero() {
       {/* Warm fallback gradient backdrop (always elegant, never broken) */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,#fdf6e6,#e9d9b6_55%,#b9923f)]" />
 
-      {/* Patient portrait — zoom target is the mouth (~62% down). Hides itself
-          gracefully if the asset isn't in place yet. */}
+      {/* Patient portrait — her mouth sits ~33% from the left, ~58% down, so
+          the zoom origin + object-position are tuned to keep her face framed
+          and push straight into her smile. Hides itself gracefully if the
+          asset isn't in place yet. */}
       <div
         ref={photo}
         className="absolute inset-0 will-change-transform"
-        style={{ transformOrigin: "50% 62%" }}
+        style={{ transformOrigin: "33% 58%" }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/images/hero-patient.jpg"
           alt="A smiling dental patient"
           className="h-full w-full object-cover"
+          style={{ objectPosition: "30% 42%" }}
           onError={(e) => {
             (e.currentTarget as HTMLImageElement).style.display = "none";
           }}
         />
       </div>
 
+      {/* Legibility scrim so the intro copy reads over the photo */}
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(105deg,rgba(8,6,4,0.55),rgba(8,6,4,0.12)_46%,rgba(8,6,4,0.5))]" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/20" />
+
       {/* Soft focus ring over the mouth as we push in */}
       <div
         ref={focus}
-        className="pointer-events-none absolute left-1/2 top-[62%] h-[30vmin] w-[30vmin] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-0"
+        className="pointer-events-none absolute left-[33%] top-[58%] h-[30vmin] w-[30vmin] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-0"
         style={{
           boxShadow:
             "0 0 0 100vmax rgba(14,11,8,0.18), inset 0 0 60px rgba(255,255,255,0.25)",
@@ -100,7 +107,7 @@ export default function Hero() {
         className="pointer-events-none absolute inset-0 opacity-0"
         style={{
           background:
-            "radial-gradient(circle at 50% 62%, rgba(120,30,40,0) 6%, rgba(40,12,16,0.55) 34%, rgba(251,248,241,0.98) 72%)",
+            "radial-gradient(circle at 33% 58%, rgba(120,30,40,0) 6%, rgba(40,12,16,0.55) 34%, rgba(251,248,241,0.98) 72%)",
         }}
       />
 
